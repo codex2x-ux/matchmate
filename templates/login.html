@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MatchMate — Login</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:wght@300;400;500;600;700;800;900&family=Barlow+Condensed:ital,wght@0,700;0,900;1,900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy:    #080c1a;
+    --dark:    #0d1122;
+    --card:    #111627;
+    --card2:   #171d30;
+    --orange:  #ff5e14;
+    --orange2: #ff7c3a;
+    --blue:    #3b6ef8;
+    --blue2:   #5c8aff;
+    --text:    #eaedf8;
+    --muted:   #6b7494;
+    --border:  rgba(255,255,255,0.07);
+    --border2: rgba(255,255,255,0.12);
+  }
+
+  html, body { height: 100%; overflow: hidden; }
+
+  body {
+    font-family: 'Barlow', sans-serif;
+    background: var(--navy);
+    color: var(--text);
+    display: flex;
+    height: 100vh;
+  }
+
+  /* ═══════════════════════════════
+     LEFT PANEL — IMAGE SPACE
+  ═══════════════════════════════ */
+  .left-panel {
+    flex: 1.1;
+    position: relative;
+    overflow: hidden;
+    background: var(--dark);
+  }
+
+  /* Hero image — full bleed */
+  .left-panel .hero-img {
+    position: absolute; inset: 0; z-index: 0;
+    width: 100%; height: 100%;
+    object-fit: cover; object-position: center 20%;
+    filter: brightness(0.55) saturate(1.15);
+    transition: transform 8s ease;
+  }
+  .left-panel:hover .hero-img { transform: scale(1.04); }
+
+  /* Gradient overlays on top of image */
+  .left-panel::before {
+    content: '';
+    position: absolute; inset: 0; z-index: 1;
+    background:
+      linear-gradient(to top, rgba(8,12,26,0.98) 0%, rgba(8,12,26,0.5) 35%, rgba(8,12,26,0.15) 65%, transparent 100%),
+      linear-gradient(to right, rgba(8,12,26,0.35) 0%, transparent 60%);
+    pointer-events: none;
+  }
+
+  /* Subtle dot grid over image */
+  .left-panel::after {
+    content: '';
+    position: absolute; inset: 0; z-index: 2;
+    background-image: radial-gradient(circle, rgba(59,110,248,0.18) 1px, transparent 1px);
+    background-size: 28px 28px;
+    pointer-events: none;
+    mix-blend-mode: overlay;
+  }
+
+  /* Sport badge chip on image */
+  .img-sport-chip {
+    position: absolute; top: 36px; left: 36px; z-index: 5;
+    display: flex; align-items: center; gap: 8px;
+    background: rgba(8,12,26,0.7);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255,94,20,0.35);
+    border-radius: 100px; padding: 7px 16px 7px 10px;
+    animation: fadeUp 0.6s ease 0.4s both;
+  }
+  .img-sport-chip .chip-dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: var(--orange); animation: blink 1.8s infinite;
+  }
+  .img-sport-chip .chip-text {
+    font-size: 11px; font-weight: 700; letter-spacing: 2px;
+    text-transform: uppercase; color: var(--text);
+  }
+
+  /* Stats row floating over image */
+  .img-stats {
+    position: absolute; top: 36px; right: 36px; z-index: 5;
+    display: flex; flex-direction: column; gap: 10px;
+    animation: fadeUp 0.6s ease 0.55s both;
+  }
+  .img-stat {
+    background: rgba(8,12,26,0.72);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 14px; padding: 10px 16px; text-align: center;
+  }
+  .img-stat-num {
+    font-family: 'Bebas Neue'; font-size: 26px; color: #fff;
+    letter-spacing: 1px; line-height: 1;
+  }
+  .img-stat-num em { color: var(--orange); font-style: normal; }
+  .img-stat-label {
+    font-size: 9px; font-weight: 700; letter-spacing: 2px;
+    text-transform: uppercase; color: var(--muted); margin-top: 2px;
+  }
+
+  /* IMAGE PLACEHOLDER ZONE — hidden now that we have real image */
+  .image-zone { display: none; }
+
+  /* Corner decorations */
+  .corner { position: absolute; width: 32px; height: 32px; z-index: 4; }
+  .corner.tl { top: 28px; left: 28px; border-top: 2px solid var(--orange); border-left: 2px solid var(--orange); border-radius: 4px 0 0 0; }
+  .corner.tr { top: 28px; right: 28px; border-top: 2px solid var(--orange); border-right: 2px solid var(--orange); border-radius: 0 4px 0 0; }
+  .corner.bl { bottom: 28px; left: 28px; border-bottom: 2px solid var(--orange); border-left: 2px solid var(--orange); border-radius: 0 0 0 4px; }
+  .corner.br { bottom: 28px; right: 28px; border-bottom: 2px solid var(--orange); border-right: 2px solid var(--orange); border-radius: 0 0 4px 0; }
+
+  /* Taglines at bottom */
+  .tagline-stack {
+    position: absolute; bottom: 44px; left: 0; right: 0;
+    z-index: 5; padding: 0 40px;
+    display: flex; flex-direction: column; gap: 4px;
+  }
+  .tagline-line {
+    font-family: 'Bebas Neue'; letter-spacing: 1.5px;
+    line-height: 1;
+    opacity: 0;
+    animation: slideTagline 0.6s ease forwards;
+  }
+  .tagline-line:nth-child(1) { font-size: clamp(20px,2.8vw,34px); color: var(--text); animation-delay: 0.3s; }
+  .tagline-line:nth-child(2) { font-size: clamp(20px,2.8vw,34px); color: var(--orange); animation-delay: 0.55s; }
+  .tagline-line:nth-child(3) { font-size: clamp(14px,1.8vw,20px); color: var(--muted); animation-delay: 0.8s; margin-top: 6px; }
+  @keyframes slideTagline {
+    from { opacity:0; transform: translateY(14px); }
+    to   { opacity:1; transform: translateY(0); }
+  }
+
+  /* Glow orbs */
+  .glow-orb {
+    position: absolute; border-radius: 50%; pointer-events: none; z-index: 0;
+  }
+  .glow-orb.a {
+    width: 340px; height: 340px;
+    top: -100px; left: -80px;
+    background: radial-gradient(circle, rgba(59,110,248,0.12) 0%, transparent 70%);
+  }
+  .glow-orb.b {
+    width: 280px; height: 280px;
+    bottom: -80px; right: -60px;
+    background: radial-gradient(circle, rgba(255,94,20,0.1) 0%, transparent 70%);
+  }
+
+  /* ═══════════════════════════════
+     RIGHT PANEL — LOGIN FORM
+  ═══════════════════════════════ */
+  .right-panel {
+    width: 480px;
+    flex-shrink: 0;
+    background: var(--card);
+    border-left: 1px solid var(--border);
+    display: flex; flex-direction: column;
+    overflow-y: auto;
+    position: relative;
+  }
+
+  /* Subtle top accent line */
+  .right-panel::before {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0; height: 3px;
+    background: linear-gradient(90deg, var(--orange), var(--blue));
+  }
+
+  .login-inner {
+    flex: 1;
+    padding: 52px 44px 48px;
+    display: flex; flex-direction: column;
+    justify-content: flex-start;
+  }
+
+  /* Logo */
+  .login-logo {
+    display: flex; align-items: center; gap: 11px;
+    margin-bottom: 40px;
+    opacity: 0; animation: fadeUp 0.5s ease 0.1s forwards;
+  }
+  .logo-badge {
+    width: 38px; height: 38px; border-radius: 10px;
+    background: var(--blue);
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 900; font-size: 13px; color: #fff; letter-spacing: 0.5px;
+  }
+  .logo-wordmark { line-height: 1; }
+  .logo-name { font-family: 'Bebas Neue'; font-size: 22px; letter-spacing: 3px; }
+  .logo-sub { font-size: 9px; letter-spacing: 3px; color: var(--muted); margin-top: 2px; text-transform: uppercase; }
+
+  /* Heading */
+  .login-heading {
+    margin-bottom: 30px;
+    opacity: 0; animation: fadeUp 0.5s ease 0.2s forwards;
+  }
+  .login-heading h1 {
+    font-family: 'Bebas Neue';
+    font-size: clamp(38px, 4vw, 52px);
+    letter-spacing: 1.5px; line-height: 0.95;
+    margin-bottom: 10px;
+  }
+  .login-heading h1 span { color: var(--orange); }
+  .login-heading p { font-size: 14px; color: var(--muted); line-height: 1.6; }
+
+  /* TABS */
+  .auth-tabs {
+    display: flex; gap: 0;
+    background: var(--card2); border-radius: 12px; padding: 4px;
+    margin-bottom: 28px;
+    opacity: 0; animation: fadeUp 0.5s ease 0.3s forwards;
+    border: 1px solid var(--border);
+  }
+  .tab-btn {
+    flex: 1; padding: 10px; border-radius: 9px; border: none;
+    font-family: 'Barlow', sans-serif; font-weight: 700; font-size: 14px;
+    cursor: pointer; transition: all 0.25s; color: var(--muted);
+    background: transparent; letter-spacing: 0.3px;
+  }
+  .tab-btn.active {
+    background: var(--orange);
+    color: #fff;
+    box-shadow: 0 4px 16px rgba(255,94,20,0.3);
+  }
+
+  /* FORM PANELS */
+  .form-panels { position: relative; }
+  .form-panel { display: none; }
+  .form-panel.active {
+    display: flex; flex-direction: column; gap: 16px;
+    animation: fadeUp 0.35s ease;
+  }
+  @keyframes fadeUp { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:translateY(0)} }
+
+  /* Form group */
+  .field-group { display: flex; flex-direction: column; gap: 7px; }
+  .field-label {
+    font-size: 11px; font-weight: 700; letter-spacing: 1.5px;
+    text-transform: uppercase; color: var(--muted);
+  }
+  .field-wrap { position: relative; }
+  .field-icon {
+    position: absolute; left: 14px; top: 50%; transform: translateY(-50%);
+    font-size: 16px; pointer-events: none; z-index: 2;
+  }
+  .field-input {
+    width: 100%;
+    background: var(--card2);
+    border: 2px solid var(--border);
+    border-radius: 12px;
+    padding: 13px 14px 13px 44px;
+    color: var(--text);
+    font-family: 'Barlow', sans-serif;
+    font-size: 15px; font-weight: 500;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+  .field-input:focus {
+    border-color: var(--orange);
+    box-shadow: 0 0 0 3px rgba(255,94,20,0.1);
+  }
+  .field-input::placeholder { color: var(--muted); font-weight: 400; }
+
+  /* Password toggle */
+  .pw-toggle {
+    position: absolute; right: 14px; top: 50%; transform: translateY(-50%);
+    cursor: pointer; font-size: 16px; opacity: 0.5;
+    background: none; border: none; color: var(--text);
+    z-index: 2; transition: opacity 0.2s;
+  }
+  .pw-toggle:hover { opacity: 1; }
+
+  /* Row group */
+  .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+  /* Forgot */
+  .forgot-row {
+    display: flex; justify-content: flex-end;
+  }
+  .forgot-link {
+    font-size: 12px; font-weight: 600; color: var(--blue2);
+    text-decoration: none; opacity: 0.8; transition: opacity 0.2s;
+  }
+  .forgot-link:hover { opacity: 1; }
+
+  /* Submit button */
+  .btn-submit {
+    width: 100%; padding: 15px;
+    background: linear-gradient(135deg, var(--orange), #d94a00);
+    border: none; border-radius: 13px;
+    font-family: 'Barlow', sans-serif;
+    font-weight: 800; font-size: 16px; letter-spacing: 0.5px;
+    color: #fff; cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+    margin-top: 4px;
+    position: relative; overflow: hidden;
+  }
+  .btn-submit::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: linear-gradient(135deg, rgba(255,255,255,0.12), transparent);
+    opacity: 0; transition: opacity 0.2s;
+  }
+  .btn-submit:hover { transform: translateY(-2px); box-shadow: 0 10px 32px rgba(255,94,20,0.4); }
+  .btn-submit:hover::before { opacity: 1; }
+  .btn-submit:active { transform: translateY(0); }
+
+  /* Divider */
+  .or-divider {
+    display: flex; align-items: center; gap: 12px;
+    margin: 4px 0;
+  }
+  .or-divider span { flex: 1; height: 1px; background: var(--border); }
+  .or-divider em { font-size: 12px; font-style: normal; color: var(--muted); font-weight: 600; }
+
+  /* Social buttons */
+  .social-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .btn-social {
+    background: var(--card2); border: 1.5px solid var(--border);
+    border-radius: 11px; padding: 11px 14px;
+    font-family: 'Barlow', sans-serif; font-weight: 600; font-size: 13px;
+    color: var(--text); cursor: pointer;
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+    transition: all 0.2s;
+  }
+  .btn-social:hover { border-color: var(--border2); background: rgba(255,255,255,0.05); }
+  .btn-social .s-icon { font-size: 17px; }
+
+  /* Terms note */
+  .terms-note {
+    font-size: 11px; color: var(--muted); text-align: center; line-height: 1.7;
+    margin-top: 6px;
+  }
+  .terms-note a { color: var(--blue2); text-decoration: none; }
+
+  /* Animated online indicator */
+  .online-pill {
+    display: inline-flex; align-items: center; gap: 7px;
+    background: rgba(59,110,248,0.1); border: 1px solid rgba(59,110,248,0.25);
+    padding: 6px 14px; border-radius: 100px;
+    font-size: 12px; font-weight: 600; color: var(--blue2);
+    margin-bottom: 22px;
+    opacity: 0; animation: fadeUp 0.5s ease 0.15s forwards;
+  }
+  .online-dot {
+    width: 7px; height: 7px; border-radius: 50%;
+    background: var(--blue2); animation: blink 1.8s infinite;
+  }
+  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
+
+
+  /* Scrollbar */
+  .right-panel { scrollbar-width: thin; scrollbar-color: rgba(255,255,255,0.15) transparent; }
+  .right-panel::-webkit-scrollbar { width: 5px; }
+  .right-panel::-webkit-scrollbar-track { background: transparent; }
+  .right-panel::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 3px; }
+  .right-panel::-webkit-scrollbar-thumb:hover { background: rgba(255,94,20,0.5); }
+</style>
+</head>
+<body>
+
+<!-- ══════════ LEFT PANEL ══════════ -->
+<div class="left-panel">
+  <div class="glow-orb a"></div>
+  <div class="glow-orb b"></div>
+
+  <!-- Hero image -->
+  <img
+    class="hero-img"
+    src="https://images.unsplash.com/photo-1461896836934-ffe607ba8211?w=1200&q=85&auto=format&fit=crop"
+    alt="Sports action"
+  >
+
+  <!-- Corner brackets -->
+  <div class="corner tl"></div>
+  <div class="corner tr"></div>
+  <div class="corner bl"></div>
+  <div class="corner br"></div>
+
+  <!-- Live sport chip -->
+  <div class="img-sport-chip">
+    <div class="chip-dot"></div>
+    <span class="chip-text">Live Matches Today</span>
+  </div>
+
+  <!-- Floating stats -->
+  <div class="img-stats">
+    <div class="img-stat">
+      <div class="img-stat-num">12<em>K</em></div>
+      <div class="img-stat-label">Active Users</div>
+    </div>
+    <div class="img-stat">
+      <div class="img-stat-num">340<em>+</em></div>
+      <div class="img-stat-label">Matches Today</div>
+    </div>
+    <div class="img-stat">
+      <div class="img-stat-num">18<em>+</em></div>
+      <div class="img-stat-label">Sports</div>
+    </div>
+  </div>
+
+  <!-- Image zone (hidden) -->
+  <div class="image-zone"></div>
+
+  <!-- Taglines at bottom -->
+  <div class="tagline-stack">
+    <div class="tagline-line">Leave the bench behind,</div>
+    <div class="tagline-line">find the best of your kind.</div>
+    <div class="tagline-line">Own the court. Find your sport.</div>
+  </div>
+</div>
+
+<!-- ══════════ RIGHT PANEL ══════════ -->
+<div class="right-panel">
+  <div class="login-inner">
+
+    <!-- Logo -->
+    <div class="login-logo">
+      <div class="logo-badge">MM</div>
+      <div class="logo-wordmark">
+        <div class="logo-name">MATCHMATE</div>
+        <div class="logo-sub">Meet · Play · Slay</div>
+      </div>
+    </div>
+
+    <!-- Online status -->
+    <div class="online-pill">
+      <div class="online-dot"></div>
+      300+ gym users active right now
+    </div>
+
+    <!-- Heading -->
+    <div class="login-heading">
+      <h1>WELCOME<br><span>BACK,</span> CHAMP</h1>
+      <p>Sign in to find your next training partner or create your profile.</p>
+    </div>
+
+    <!-- Tabs -->
+    <div class="auth-tabs">
+      <button class="tab-btn active" onclick="switchTab('login')">Sign In</button>
+      <button class="tab-btn" onclick="switchTab('signup')">Create Account</button>
+    </div>
+
+    <!-- FORM PANELS -->
+    <div class="form-panels">
+
+      <!-- LOGIN -->
+      <div class="form-panel active" id="panel-login">
+        <div class="field-group">
+          <div class="field-label">Email / Username</div>
+          <div class="field-wrap">
+            <span class="field-icon">📧</span>
+            <input class="field-input" type="email" placeholder="you@email.com">
+          </div>
+        </div>
+        <div class="field-group">
+          <div class="field-label">Password</div>
+          <div class="field-wrap">
+            <span class="field-icon">🔒</span>
+            <input class="field-input" type="password" id="loginPw" placeholder="••••••••">
+            <button class="pw-toggle" onclick="togglePw('loginPw',this)" type="button">👁</button>
+          </div>
+        </div>
+        <div class="forgot-row">
+          <a class="forgot-link" href="#">Forgot password?</a>
+        </div>
+        <button class="btn-submit">Sign In to MatchMate →</button>
+        <div class="or-divider"><span></span><em>or continue with</em><span></span></div>
+        <div class="social-row">
+          <button class="btn-social"><span class="s-icon">🇬</span> Google</button>
+          <button class="btn-social"><span class="s-icon">📘</span> Facebook</button>
+        </div>
+      </div>
+
+      <!-- SIGN UP -->
+      <div class="form-panel" id="panel-signup">
+        <div class="field-row">
+          <div class="field-group">
+            <div class="field-label">First Name</div>
+            <div class="field-wrap">
+              <span class="field-icon">👤</span>
+              <input class="field-input" type="text" placeholder="Alex" style="padding-left:44px">
+            </div>
+          </div>
+          <div class="field-group">
+            <div class="field-label">Last Name</div>
+            <div class="field-wrap">
+              <span class="field-icon">👤</span>
+              <input class="field-input" type="text" placeholder="Rox" style="padding-left:44px">
+            </div>
+          </div>
+        </div>
+        <div class="field-group">
+          <div class="field-label">Email Address</div>
+          <div class="field-wrap">
+            <span class="field-icon">📧</span>
+            <input class="field-input" type="email" placeholder="you@email.com">
+          </div>
+        </div>
+        <div class="field-group">
+          <div class="field-label">Username</div>
+          <div class="field-wrap">
+            <span class="field-icon">⚡</span>
+            <input class="field-input" type="text" placeholder="@beastmode99">
+          </div>
+        </div>
+        <div class="field-group">
+          <div class="field-label">Password</div>
+          <div class="field-wrap">
+            <span class="field-icon">🔒</span>
+            <input class="field-input" type="password" id="signupPw" placeholder="Min. 8 characters">
+            <button class="pw-toggle" onclick="togglePw('signupPw',this)" type="button">👁</button>
+          </div>
+        </div>
+        <button class="btn-submit">Create My Account →</button>
+        <div class="or-divider"><span></span><em>or sign up with</em><span></span></div>
+        <div class="social-row">
+          <button class="btn-social"><span class="s-icon">🇬</span> Google</button>
+          <button class="btn-social"><span class="s-icon">📘</span> Facebook</button>
+        </div>
+        <div class="terms-note">
+          By creating an account you agree to our <a href="#">Terms</a> and <a href="#">Privacy Policy</a>.
+        </div>
+      </div>
+
+    </div><!-- /form-panels -->
+
+  </div><!-- /login-inner -->
+</div><!-- /right-panel -->
+
+<script>
+  // ── TAB SWITCH ──
+  function switchTab(tab) {
+    document.querySelectorAll('.tab-btn').forEach((b,i) => {
+      b.classList.toggle('active', (i===0 && tab==='login') || (i===1 && tab==='signup'));
+    });
+    document.getElementById('panel-login').classList.toggle('active', tab==='login');
+    document.getElementById('panel-signup').classList.toggle('active', tab==='signup');
+
+    // Update heading
+    const h = document.querySelector('.login-heading h1');
+    if(tab==='login'){
+      h.innerHTML = 'WELCOME<br><span>BACK,</span> CHAMP';
+    } else {
+      h.innerHTML = 'JOIN THE<br><span>SQUAD</span> NOW';
+    }
+  }
+
+  // ── PASSWORD TOGGLE ──
+  function togglePw(id, btn) {
+    const inp = document.getElementById(id);
+    if(inp.type === 'password') { inp.type = 'text'; btn.textContent = '🙈'; }
+    else { inp.type = 'password'; btn.textContent = '👁'; }
+  }
+
+
+</script>
+</body>
+</html>
