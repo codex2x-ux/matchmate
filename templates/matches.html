@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MatchMate — Your Matches</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:ital,wght@0,400;0,700;0,800;0,900;1,800;1,900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --orange:#FF6A00;--orange2:#FF9A3C;
+  --dark:#09111F;--light:#111827;--light2:#161E2E;--muted:#94A3B8;
+}
+html,body{min-height:100%;background:var(--dark);color:#E2E8F0;font-family:'DM Sans',sans-serif}
+
+/* ── NAVBAR ── */
+.navbar{position:fixed;inset:0 0 auto 0;z-index:300;height:64px;display:flex;align-items:center;justify-content:space-between;padding:0 40px;background:rgba(9,17,31,.95);backdrop-filter:blur(18px);border-bottom:1px solid rgba(255,255,255,.06)}
+.brand{display:flex;align-items:center;gap:10px;text-decoration:none}
+.brand-box{width:34px;height:34px;background:var(--orange);border-radius:9px;display:grid;place-items:center;font-family:'Bebas Neue',sans-serif;font-size:15px;color:#fff;letter-spacing:1px}
+.brand-name{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:2px;color:#fff;line-height:1}
+.brand-tag{font-size:9px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--orange)}
+.nav-right{display:flex;align-items:center;gap:12px}
+.nav-pill{background:rgba(255,106,0,.15);border:1px solid rgba(255,106,0,.35);color:var(--orange2);font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;padding:4px 14px;border-radius:20px}
+.nav-home{color:rgba(255,255,255,.5);font-size:13px;font-weight:600;text-decoration:none;padding:8px 16px;border-radius:20px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);transition:all .2s}
+.nav-home:hover{background:rgba(255,255,255,.12);color:#fff}
+
+/* ── LAYOUT ── */
+.page{padding-top:80px;min-height:100vh}
+.container{max-width:900px;margin:0 auto;padding:40px 24px 80px}
+
+/* ── HEADER ── */
+.page-header{text-align:center;margin-bottom:48px}
+.page-eyebrow{font-size:11px;font-weight:700;letter-spacing:4px;text-transform:uppercase;color:var(--orange);margin-bottom:10px}
+.page-title{font-family:'Barlow Condensed',sans-serif;font-size:clamp(52px,8vw,88px);font-weight:900;font-style:italic;text-transform:uppercase;color:#fff;line-height:.9;margin-bottom:14px}
+.page-title em{color:var(--orange)}
+.page-sub{font-size:15px;color:rgba(255,255,255,.45);max-width:460px;margin:0 auto}
+
+/* ── LOADING STATE ── */
+.loading-wrap{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:80px 24px;gap:24px}
+.loading-ring{width:72px;height:72px;border-radius:50%;border:3px solid rgba(255,106,0,.15);border-top-color:var(--orange);animation:spin 1s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loading-text{font-family:'Barlow Condensed',sans-serif;font-size:28px;font-weight:900;font-style:italic;text-transform:uppercase;color:#fff;letter-spacing:.5px}
+.loading-sub{font-size:13px;color:var(--muted);text-align:center;max-width:280px}
+.ai-steps{display:flex;flex-direction:column;gap:10px;margin-top:8px;min-width:260px}
+.ai-step{display:flex;align-items:center;gap:10px;font-size:13px;color:rgba(255,255,255,.35);transition:color .4s}
+.ai-step.done{color:rgba(255,255,255,.7)}
+.ai-step.active{color:var(--orange2)}
+.ai-step-icon{width:22px;height:22px;border-radius:50%;border:1.5px solid rgba(255,255,255,.15);display:flex;align-items:center;justify-content:center;font-size:10px;flex-shrink:0;transition:all .4s}
+.ai-step.done .ai-step-icon{background:rgba(255,106,0,.3);border-color:var(--orange);color:var(--orange)}
+.ai-step.active .ai-step-icon{border-color:var(--orange2);animation:pulse-ring .8s ease-in-out infinite}
+@keyframes pulse-ring{0%,100%{box-shadow:0 0 0 0 rgba(255,154,60,.4)}50%{box-shadow:0 0 0 6px rgba(255,154,60,0)}}
+
+/* ── ERROR STATE ── */
+.error-wrap{text-align:center;padding:60px 24px}
+.error-emoji{font-size:48px;margin-bottom:16px}
+.error-title{font-family:'Barlow Condensed',sans-serif;font-size:36px;font-weight:900;font-style:italic;text-transform:uppercase;color:#fff;margin-bottom:8px}
+.error-sub{font-size:14px;color:var(--muted);margin-bottom:24px}
+.retry-btn{display:inline-flex;align-items:center;gap:8px;background:var(--orange);color:#fff;font-size:14px;font-weight:700;padding:12px 24px;border-radius:50px;border:none;cursor:pointer;transition:all .2s}
+.retry-btn:hover{background:#e55c00;transform:translateY(-2px)}
+
+/* ── AI BADGE ── */
+.ai-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(255,106,0,.12);border:1px solid rgba(255,106,0,.3);border-radius:20px;padding:5px 14px;font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--orange2);margin-bottom:32px}
+.ai-badge svg{width:14px;height:14px;fill:var(--orange)}
+
+/* ── MATCH CARD ── */
+.matches-grid{display:flex;flex-direction:column;gap:18px}
+.match-card{background:var(--light2);border:1px solid rgba(255,255,255,.07);border-radius:22px;overflow:hidden;transition:transform .2s,border-color .2s;animation:card-in .5s cubic-bezier(.23,1,.32,1) both}
+.match-card:hover{transform:translateY(-3px);border-color:rgba(255,106,0,.25)}
+@keyframes card-in{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+
+.card-top-bar{height:3px;background:linear-gradient(90deg,var(--orange),var(--orange2))}
+.card-top-bar.low{background:linear-gradient(90deg,#3B82F6,#6366F1)}
+.card-top-bar.mid{background:linear-gradient(90deg,#10B981,#3B82F6)}
+
+.card-body{padding:24px 26px}
+.card-main{display:flex;align-items:center;gap:20px}
+
+.avatar-wrap{position:relative;flex-shrink:0}
+.avatar{width:68px;height:68px;border-radius:50%;background:linear-gradient(135deg,var(--orange),var(--orange2));display:grid;place-items:center;font-family:'Bebas Neue',sans-serif;font-size:30px;color:#fff;border:3px solid rgba(255,106,0,.2)}
+.avatar.alt1{background:linear-gradient(135deg,#3B82F6,#6366F1)}
+.avatar.alt2{background:linear-gradient(135deg,#10B981,#3B82F6)}
+.avatar.alt3{background:linear-gradient(135deg,#EC4899,#EF4444)}
+.avatar.alt4{background:linear-gradient(135deg,#8B5CF6,#EC4899)}
+.real-badge{position:absolute;bottom:-3px;right:-3px;background:#10B981;border:2px solid var(--dark);border-radius:50%;width:20px;height:20px;display:flex;align-items:center;justify-content:center;font-size:10px}
+
+.card-info{flex:1;min-width:0}
+.card-name{font-family:'Barlow Condensed',sans-serif;font-size:26px;font-weight:900;text-transform:uppercase;color:#fff;line-height:1;letter-spacing:.3px}
+.card-meta{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+.meta-chip{font-size:11px;font-weight:600;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:20px;padding:3px 10px;color:var(--muted)}
+
+.score-wrap{text-align:center;flex-shrink:0}
+.score-ring{position:relative;width:72px;height:72px}
+.score-ring svg{transform:rotate(-90deg)}
+.score-bg{fill:none;stroke:rgba(255,255,255,.07);stroke-width:5}
+.score-fill{fill:none;stroke:var(--orange);stroke-width:5;stroke-linecap:round;stroke-dasharray:195;transition:stroke-dashoffset 1.2s cubic-bezier(.23,1,.32,1)}
+.score-fill.mid{stroke:#3B82F6}
+.score-fill.low{stroke:#10B981}
+.score-num{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0}
+.score-val{font-family:'Bebas Neue',sans-serif;font-size:22px;color:#fff;line-height:1}
+.score-label{font-size:8px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted)}
+
+.card-divider{height:1px;background:rgba(255,255,255,.06);margin:18px 0}
+
+.card-reason{font-size:13px;color:rgba(255,255,255,.55);line-height:1.65;border-left:2px solid rgba(255,106,0,.4);padding-left:14px;margin-bottom:16px;font-style:italic}
+
+.card-sports{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:16px}
+.sport-tag{display:flex;align-items:center;gap:4px;font-size:11px;font-weight:600;background:rgba(255,106,0,.1);border:1px solid rgba(255,106,0,.25);border-radius:20px;padding:4px 11px;color:var(--orange2)}
+.sport-tag.shared{background:rgba(16,185,129,.1);border-color:rgba(16,185,129,.3);color:#6EE7B7}
+
+.days-row{display:flex;gap:5px;flex-wrap:wrap}
+.day-dot{font-size:10px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.09);border-radius:8px;padding:4px 8px;color:rgba(255,255,255,.3)}
+.day-dot.shared{background:rgba(255,106,0,.12);border-color:rgba(255,106,0,.3);color:var(--orange2)}
+
+.card-footer{display:flex;gap:10px;margin-top:18px}
+.connect-btn{flex:1;display:flex;align-items:center;justify-content:center;gap:8px;background:var(--orange);color:#fff;font-size:13px;font-weight:700;padding:12px;border-radius:14px;border:none;cursor:pointer;transition:all .2s;letter-spacing:.3px}
+.connect-btn:hover{background:#e55c00;transform:translateY(-1px)}
+.connect-btn svg{width:15px;height:15px;stroke:#fff;fill:none;stroke-width:2.5}
+.skip-btn{display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,.06);color:rgba(255,255,255,.45);font-size:13px;font-weight:600;padding:12px 18px;border-radius:14px;border:1px solid rgba(255,255,255,.1);cursor:pointer;transition:all .2s}
+.skip-btn:hover{background:rgba(255,255,255,.11);color:#fff}
+
+/* ── RANK BADGE ── */
+.rank{font-family:'Bebas Neue',sans-serif;font-size:13px;letter-spacing:1px;padding:3px 10px;border-radius:20px;border:1px solid rgba(255,106,0,.35);color:var(--orange2);background:rgba(255,106,0,.1)}
+.rank.gold{border-color:rgba(250,204,21,.5);color:#FCD34D;background:rgba(250,204,21,.1)}
+.rank.silver{border-color:rgba(148,163,184,.4);color:#CBD5E1;background:rgba(148,163,184,.08)}
+.rank.bronze{border-color:rgba(180,120,60,.4);color:#D97706;background:rgba(180,120,60,.1)}
+
+/* ── SHARED LABEL ── */
+.shared-label{font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:rgba(110,231,183,.7);margin-right:4px}
+
+/* ── BOTTOM CTA ── */
+.bottom-cta{text-align:center;margin-top:48px;padding:36px;background:radial-gradient(ellipse at 50% 0%,rgba(255,106,0,.12) 0%,transparent 70%),var(--light2);border:1px solid rgba(255,255,255,.06);border-radius:24px}
+.cta-title{font-family:'Barlow Condensed',sans-serif;font-size:36px;font-weight:900;font-style:italic;text-transform:uppercase;color:#fff;margin-bottom:8px}
+.cta-sub{font-size:14px;color:var(--muted);margin-bottom:20px}
+.cta-btn{display:inline-flex;align-items:center;gap:10px;background:var(--orange);color:#fff;font-size:14px;font-weight:700;padding:14px 28px;border-radius:50px;border:none;cursor:pointer;transition:all .2s;box-shadow:0 8px 28px rgba(255,106,0,.35);text-decoration:none;letter-spacing:.3px}
+.cta-btn:hover{background:#e55c00;transform:translateY(-2px)}
+
+/* ── EMPTY PROFILE NOTICE ── */
+.no-profile{text-align:center;padding:80px 24px}
+.no-profile-emoji{font-size:56px;margin-bottom:20px}
+.no-profile-title{font-family:'Barlow Condensed',sans-serif;font-size:44px;font-weight:900;font-style:italic;text-transform:uppercase;color:#fff;margin-bottom:10px}
+.no-profile-sub{font-size:14px;color:var(--muted);margin-bottom:28px}
+.go-profile{display:inline-flex;align-items:center;gap:10px;background:var(--orange);color:#fff;font-size:14px;font-weight:700;padding:14px 28px;border-radius:50px;text-decoration:none;transition:all .2s;box-shadow:0 6px 24px rgba(255,106,0,.35)}
+.go-profile:hover{background:#e55c00;transform:translateY(-2px)}
+
+@media(max-width:600px){
+  .navbar{padding:0 16px}
+  .container{padding:28px 16px 60px}
+  .card-main{flex-wrap:wrap}
+  .score-wrap{order:-1;align-self:flex-start}
+}
+
+/* Connected toast */
+.toast{position:fixed;bottom:32px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--light2);border:1px solid rgba(255,255,255,.1);border-radius:14px;padding:14px 22px;font-size:14px;font-weight:600;color:#E2E8F0;display:flex;align-items:center;gap:10px;z-index:1000;transition:transform .35s cubic-bezier(.23,1,.32,1);white-space:nowrap}
+.toast.show{transform:translateX(-50%) translateY(0)}
+.toast-icon{font-size:20px}
+</style>
+</head>
+<body>
+<script type="module">
+  import { initializeApp }
+    from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+  import { getAuth, onAuthStateChanged, signOut }
+    from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+  const firebaseConfig = {
+    apiKey:            "AIzaSyCxPl2JaDYpYl_9lT--z8XLov1BuA1E5KA",
+    authDomain:        "matchmate-b78e8.firebaseapp.com",
+    projectId:         "matchmate-b78e8",
+    storageBucket:     "matchmate-b78e8.firebasestorage.app",
+    messagingSenderId: "295538137421",
+    appId:             "1:295538137421:web:03fe854ad9958ce1d93f04",
+    measurementId:     "G-08JVXCBVWW"
+  };
+
+  const _fbApp  = initializeApp(firebaseConfig);
+  const _fbAuth = getAuth(_fbApp);
+
+  // Loading overlay — hides content until auth is confirmed
+  const _overlay = document.createElement("div");
+  _overlay.id = "fb-auth-overlay";
+  _overlay.innerHTML = `
+    <div style="width:42px;height:42px;border-radius:50%;
+      border:3px solid rgba(255,106,0,.18);border-top-color:#FF6A00;
+      animation:_fbspin .7s linear infinite;margin-bottom:14px;"></div>
+    <span style="font-family:sans-serif;font-size:11px;font-weight:700;
+      letter-spacing:2px;color:#6b7494;text-transform:uppercase;">Loading…</span>
+    <style>
+      @keyframes _fbspin { to { transform: rotate(360deg); } }
+    </style>`;
+  Object.assign(_overlay.style, {
+    position:"fixed", inset:"0", zIndex:"99999",
+    background:"#09111F", display:"flex",
+    alignItems:"center", justifyContent:"center", flexDirection:"column"
+  });
+  document.body.prepend(_overlay);
+
+  // Auth state listener
+  onAuthStateChanged(_fbAuth, (user) => {
+    if (!user) {
+      window.location.replace("/login");
+      return;
+    }
+    // Expose globally for use by any script on the page
+    window.currentUser  = user;
+    window.currentUID   = user.uid;
+    window.currentEmail = user.email;
+    window.currentName  = user.displayName || user.email.split("@")[0];
+
+    // Remove loading overlay
+    _overlay.remove();
+
+    // Signal that auth is ready — wrap page logic in this event
+    document.dispatchEvent(new CustomEvent("authReady", { detail: { user } }));
+  });
+
+  // Helper: get Authorization headers for Flask API calls
+  window.getAuthHeaders = async function() {
+    const token = await window.currentUser.getIdToken();
+    return {
+      "Content-Type": "application/json",
+      "Authorization": "Bearer " + token
+    };
+  };
+
+  // Helper: sign out and redirect
+  window.doLogout = async function() {
+    await signOut(_fbAuth);
+    window.location.replace("/login");
+  };
+</script>
+
+<!-- NAVBAR -->
+<nav class="navbar">
+  <a class="brand" href="/home">
+    <div class="brand-box">MM</div>
+    <div>
+      <div class="brand-name">MatchMate</div>
+      <div class="brand-tag">Meet · Play · Slay</div>
+    </div>
+  </a>
+  <div class="nav-right">
+    <span class="nav-pill">✨ AI Matches</span>
+    <a class="nav-home" href="/home">← Home</a>
+  </div>
+</nav>
+
+<div class="page">
+  <div class="container">
+
+    <!-- HEADER -->
+    <div class="page-header">
+      <div class="page-eyebrow">🤖 AI-Powered Matchmaking</div>
+      <div class="page-title">Your Top<br><em>Matches</em></div>
+      <p class="page-sub">Our AI analyzed your profile and found the most compatible sports partners for you.</p>
+    </div>
+
+    <!-- CONTENT AREA -->
+    <div id="content">
+      <!-- Loading, error, or match cards rendered here -->
+    </div>
+
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast">
+  <span class="toast-icon">🎉</span>
+  <span id="toastMsg">Request sent!</span>
+</div>
+
+<script>
+const SPORT_EMO = {Football:'⚽',Basketball:'🏀',Cricket:'🏏',Tennis:'🎾',Swimming:'🏊',Badminton:'🏸',Running:'🏃',Gym:'🏋️',Volleyball:'🏐',Cycling:'🚴',Kabaddi:'🤼',Yoga:'🧘'};
+const DAYS_ALL = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+const RANK_LABELS = ['🥇 Best Match','🥈 Runner Up','🥉 Great Pick','#4 Match','#5 Match'];
+const RANK_CLASSES = ['gold','silver','bronze','',''];
+const AVATAR_CLASSES = ['','alt1','alt2','alt3','alt4'];
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  document.getElementById('toastMsg').textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3000);
+}
+
+function getBarClass(score) {
+  if (score >= 75) return '';
+  if (score >= 50) return 'mid';
+  return 'low';
+}
+
+function getFillClass(score) {
+  if (score >= 75) return '';
+  if (score >= 50) return 'mid';
+  return 'low';
+}
+
+function scoreOffset(score) {
+  const circumference = 195;
+  return circumference - (score / 100) * circumference;
+}
+
+function renderMatches(matches, userProfile) {
+  const sharedSportsArr = (m) => {
+    const myPlays = userProfile.mySports || [];
+    const myPref  = userProfile.prefSports || [];
+    const all = [...new Set([...myPlays, ...myPref])];
+    return (m.sports || []).filter(s => all.includes(s));
+  };
+
+  const sharedDaysArr = (m) => {
+    const myDays = userProfile.days || [];
+    return (m.days || []).filter(d => myDays.includes(d));
+  };
+
+  const html = `
+    <div style="text-align:center;margin-bottom:32px">
+      <div class="ai-badge">
+        <svg viewBox="0 0 24 24"><path d="M12 2L9.09 8.26L2 9.27L7 14.14L5.82 21L12 17.77L18.18 21L17 14.14L22 9.27L14.91 8.26L12 2Z"/></svg>
+        AI Compatibility Score
+      </div>
+    </div>
+    <div class="matches-grid">
+      ${matches.map((m, i) => {
+        const shared = sharedSportsArr(m);
+        const sharedDays = sharedDaysArr(m);
+        const barClass = getBarClass(m.score);
+        const fillClass = getFillClass(m.score);
+        const offset = scoreOffset(m.score);
+        const avatarLetter = (m.name || 'M')[0].toUpperCase();
+        return `
+        <div class="match-card" style="animation-delay:${i * 80}ms">
+          <div class="card-top-bar ${barClass}"></div>
+          <div class="card-body">
+            <div class="card-main">
+              <div class="avatar-wrap">
+                <div class="avatar ${AVATAR_CLASSES[i % 5]}">${avatarLetter}</div>
+                ${m.isReal ? '<div class="real-badge">✓</div>' : ''}
+              </div>
+              <div class="card-info">
+                <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+                  <div class="card-name">${m.name}</div>
+                  <span class="rank ${RANK_CLASSES[i]}">${RANK_LABELS[i]}</span>
+                </div>
+                <div class="card-meta">
+                  <span class="meta-chip">🎂 ${m.age}</span>
+                  <span class="meta-chip">${m.gender === 'Male' ? '♂️' : m.gender === 'Female' ? '♀️' : '⚧️'} ${m.gender}</span>
+                  <span class="meta-chip">📍 ${m.city}</span>
+                  <span class="meta-chip">💪 ${m.skill}</span>
+                  ${m.isReal ? '<span class="meta-chip" style="color:#6EE7B7;border-color:rgba(110,231,183,.3);background:rgba(16,185,129,.08)">✅ Real User</span>' : ''}
+                </div>
+              </div>
+              <div class="score-wrap">
+                <div class="score-ring">
+                  <svg width="72" height="72" viewBox="0 0 72 72">
+                    <circle class="score-bg" cx="36" cy="36" r="31"/>
+                    <circle class="score-fill ${fillClass}" cx="36" cy="36" r="31"
+                      style="stroke-dashoffset:${offset}" id="sf${i}"/>
+                  </svg>
+                  <div class="score-num">
+                    <div class="score-val">${m.score}</div>
+                    <div class="score-label">Match</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="card-divider"></div>
+
+            <div class="card-reason">"${m.matchReason}"</div>
+
+            <div style="font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:8px">
+              Sports
+              ${shared.length > 0 ? `<span class="shared-label"> · ${shared.length} Shared</span>` : ''}
+            </div>
+            <div class="card-sports">
+              ${(m.sports || []).map(s => `
+                <span class="sport-tag ${shared.includes(s) ? 'shared' : ''}">
+                  ${SPORT_EMO[s] || '🏅'} ${s}
+                </span>
+              `).join('')}
+            </div>
+
+            <div style="font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:8px;margin-top:14px">
+              Available Days
+              ${sharedDays.length > 0 ? `<span class="shared-label"> · ${sharedDays.length} Overlap</span>` : ''}
+            </div>
+            <div class="days-row">
+              ${DAYS_ALL.map(d => `
+                <span class="day-dot ${(m.days||[]).includes(d) ? (sharedDays.includes(d) ? 'shared' : 'active') : ''}"
+                  style="${!(m.days||[]).includes(d) ? 'opacity:.3' : ''}">
+                  ${d}
+                </span>
+              `).join('')}
+            </div>
+
+            <div class="card-footer">
+              <button class="connect-btn" onclick="connect('${m.name.replace(/'/g,"\\'")}')">
+                <svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.95 12a19.79 19.79 0 01-3.07-8.67A2 2 0 012.86 1h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L7.09 8.66a16 16 0 006.29 6.29l.95-1.05a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 16.92z"/></svg>
+                Connect
+              </button>
+              <button class="skip-btn" onclick="skipCard(this)">Skip</button>
+            </div>
+          </div>
+        </div>
+        `;
+      }).join('')}
+    </div>
+
+    <div class="bottom-cta">
+      <div class="cta-title">Not Finding the Right Fit?</div>
+      <div class="cta-sub">Update your preferences and let our AI search again.</div>
+      <a class="cta-btn" href="/profile">✏️ Update My Profile</a>
+    </div>
+  `;
+
+  document.getElementById('content').innerHTML = html;
+
+  // Animate score rings in
+  setTimeout(() => {
+    matches.forEach((m, i) => {
+      const el = document.getElementById('sf' + i);
+      if (el) el.style.strokeDashoffset = scoreOffset(m.score);
+    });
+  }, 100);
+}
+
+function renderLoading() {
+  document.getElementById('content').innerHTML = `
+    <div class="loading-wrap">
+      <div class="loading-ring"></div>
+      <div class="loading-text">Finding Your Mates…</div>
+      <div class="loading-sub">Our AI is crunching compatibility data</div>
+      <div class="ai-steps">
+        <div class="ai-step done" id="step1">
+          <div class="ai-step-icon">✓</div>
+          <span>Loading your profile</span>
+        </div>
+        <div class="ai-step active" id="step2">
+          <div class="ai-step-icon">⚡</div>
+          <span>Scanning candidate pool</span>
+        </div>
+        <div class="ai-step" id="step3">
+          <div class="ai-step-icon">🧠</div>
+          <span>Running AI compatibility model</span>
+        </div>
+        <div class="ai-step" id="step4">
+          <div class="ai-step-icon">🏆</div>
+          <span>Ranking your top matches</span>
+        </div>
+      </div>
+    </div>
+  `;
+
+  // Animate steps
+  setTimeout(() => {
+    document.getElementById('step2').classList.remove('active');
+    document.getElementById('step2').classList.add('done');
+    document.getElementById('step2').querySelector('.ai-step-icon').textContent = '✓';
+    document.getElementById('step3').classList.add('active');
+  }, 1200);
+  setTimeout(() => {
+    document.getElementById('step3').classList.remove('active');
+    document.getElementById('step3').classList.add('done');
+    document.getElementById('step3').querySelector('.ai-step-icon').textContent = '✓';
+    document.getElementById('step4').classList.add('active');
+  }, 2600);
+}
+
+function renderError(msg) {
+  document.getElementById('content').innerHTML = `
+    <div class="error-wrap">
+      <div class="error-emoji">😕</div>
+      <div class="error-title">Something Went Wrong</div>
+      <div class="error-sub" style="line-height:1.7">${msg || 'Could not load matches. Please try again.'}</div>
+      <button class="retry-btn" onclick="loadMatches()" style="margin-top:20px">🔄 Retry</button>
+    </div>
+  `;
+}
+
+function renderNoProfile() {
+  document.getElementById('content').innerHTML = `
+    <div class="no-profile">
+      <div class="no-profile-emoji">👤</div>
+      <div class="no-profile-title">No Profile Found</div>
+      <div class="no-profile-sub">Complete your profile first so our AI can find your perfect sports partner.</div>
+      <a class="go-profile" href="/profile">🏅 Set Up My Profile</a>
+    </div>
+  `;
+}
+
+function connect(name) {
+  showToast(`Connection request sent to ${name}! 🎉`);
+}
+
+function skipCard(btn) {
+  const card = btn.closest('.match-card');
+  card.style.transition = 'opacity .3s,transform .3s';
+  card.style.opacity = '0';
+  card.style.transform = 'translateX(40px)';
+  setTimeout(() => card.remove(), 320);
+}
+
+async function loadMatches() {
+  // ── Step 1: Check localStorage for saved profile ──
+  let raw, userProfile;
+  try {
+    raw = localStorage.getItem('matchmate_profile');
+  } catch(e) {
+    renderError('Could not read localStorage: ' + e.message);
+    return;
+  }
+
+  if (!raw) {
+    renderNoProfile();
+    return;
+  }
+
+  try {
+    userProfile = JSON.parse(raw);
+  } catch(e) {
+    renderError('Saved profile data is corrupted. Please go back and fill your profile again.');
+    return;
+  }
+
+  renderLoading();
+
+  // ── Step 2: Call Flask /api/match ──
+  let res;
+  try {
+    res = await fetch('/api/match', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify(userProfile)
+    });
+  } catch(networkErr) {
+    // This fires when Flask server is completely unreachable
+    renderError(
+      'Cannot connect to the server. Make sure Flask is running (<code>python app.py</code>) ' +
+      'and you are visiting <b>http://127.0.0.1:5000/matches</b> — not opening the HTML file directly.'
+    );
+    return;
+  }
+
+  // ── Step 3: Parse response ──
+  let responseText;
+  try {
+    responseText = await res.text();
+  } catch(e) {
+    renderError('Failed to read server response: ' + e.message);
+    return;
+  }
+
+  let data;
+  try {
+    data = JSON.parse(responseText);
+  } catch(e) {
+    renderError(
+      `Server returned an unexpected response (HTTP ${res.status}):<br><br>` +
+      `<code style="font-size:11px;word-break:break-all">${responseText.substring(0, 400)}</code>`
+    );
+    return;
+  }
+
+  // ── Step 4: Check for API-level errors ──
+  if (!res.ok || data.error) {
+    renderError(data.error || `Server error ${res.status}`);
+    return;
+  }
+
+  if (!data.matches || data.matches.length === 0) {
+    renderError('No matches returned by AI. Please try again.');
+    return;
+  }
+
+  renderMatches(data.matches, userProfile);
+}
+
+loadMatches();
+</script>
+</body>
+</html>

@@ -23,6 +23,9 @@ body{font-family:'DM Sans',sans-serif;background:var(--light);color:#E2E8F0;over
 .nav-link.active-link{color:#fff;background:rgba(20,71,230,.2);border:1px solid rgba(20,71,230,.3)}
 .welcome-chip{position:fixed;top:80px;left:40px;z-index:200;display:flex;align-items:center;gap:8px;background:rgba(22,30,46,.9);border:1px solid rgba(255,255,255,.1);border-radius:50px;padding:6px 14px 6px 8px;font-size:13px;font-weight:500;color:#E2E8F0;box-shadow:0 4px 20px rgba(0,0,0,.3);animation:slideDown .5s ease .1s both}
 .chip-icon{width:26px;height:26px;border-radius:50%;background:linear-gradient(135deg,var(--blue),#6ea8fe);display:grid;place-items:center;font-size:13px}
+.setup-profile-btn{position:fixed;top:80px;left:220px;z-index:200;display:flex;align-items:center;gap:8px;background:var(--blue);border-radius:50px;padding:6px 16px 6px 8px;font-size:13px;font-weight:600;color:#fff;text-decoration:none;box-shadow:0 4px 20px rgba(20,71,230,.35);animation:slideDown .5s ease .2s both;transition:background .2s,transform .2s}
+.setup-profile-btn:hover{background:#0f3acc;transform:translateY(-2px)}
+.setup-profile-icon{width:26px;height:26px;border-radius:50%;background:rgba(255,255,255,.2);display:grid;place-items:center;font-size:13px}
 @keyframes slideDown{from{opacity:0;transform:translateY(-10px)}to{opacity:1;transform:translateY(0)}}
 .hero{position:relative;height:100vh;min-height:700px;overflow:hidden;background:var(--dark)}
 .slide{position:absolute;inset:0;opacity:0;transition:opacity 1s ease;pointer-events:none}
@@ -142,7 +145,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--light);color:#E2E8F0;over
   <div class="nav-actions">
     <a href="/home" class="nav-link active-link">Home</a>
     <a href="/activities" class="nav-link">Activities</a>
-    <a href="/profile?user={{ username }}" class="nav-link">Profile</a>
+    <a href="/profile" class="nav-link">Profile</a>
     <a href="/logout" class="nav-link pill">Logout</a>
   </div>
 </nav>
@@ -151,6 +154,11 @@ body{font-family:'DM Sans',sans-serif;background:var(--light);color:#E2E8F0;over
   <div class="chip-icon">👋</div>
   Hey, <strong style="margin-left:2px">{{ username }}</strong>
 </div>
+
+<a href="/profile" class="setup-profile-btn">
+  <div class="setup-profile-icon">👤</div>
+  Set Up Profile
+</a>
 
 <div class="hero" id="hero">
 
@@ -169,11 +177,11 @@ body{font-family:'DM Sans',sans-serif;background:var(--light);color:#E2E8F0;over
       <div class="slide-headline">Watch<br><em>Together</em></div>
       <div class="slide-sub">Stream live matches with your crew. Feel the stadium energy — wherever you are.</div>
       <div class="slide-cta">
-        <a href="/sports?mode=watch" class="btn-primary">
+        <a href="/watch" class="btn-primary">
           <div class="btn-icon"><svg viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></div>
           Start Watching
         </a>
-        <a href="/sports?mode=watch" class="btn-ghost">
+        <a href="/watch" class="btn-ghost">
           <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/></svg>
           See Live Games
         </a>
@@ -215,11 +223,11 @@ body{font-family:'DM Sans',sans-serif;background:var(--light);color:#E2E8F0;over
       <div class="slide-headline">Play<br><em>Together</em></div>
       <div class="slide-sub">Find teammates near you. Build a squad, pick a sport, and get on the field today.</div>
       <div class="slide-cta">
-        <a href="/sports?mode=play" class="btn-primary">
+        <a href="/play" class="btn-primary">
           <div class="btn-icon"><svg viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></div>
           Find Players
         </a>
-        <a href="/sports?mode=play" class="btn-ghost">
+        <a href="/play" class="btn-ghost">
           <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/></svg>
           Open Games Near You
         </a>
@@ -260,11 +268,11 @@ body{font-family:'DM Sans',sans-serif;background:var(--light);color:#E2E8F0;over
       <div class="slide-headline">Live<br><em>Events</em></div>
       <div class="slide-sub">Discover local tournaments, community leagues, and matches happening around your city.</div>
       <div class="slide-cta">
-        <a href="/sports?mode=events" class="btn-primary">
+        <a href="/activities" class="btn-primary">
           <div class="btn-icon"><svg viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></div>
           Explore Events
         </a>
-        <a href="/sports?mode=events" class="btn-ghost">
+        <a href="/activities" class="btn-ghost">
           <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/></svg>
           View Near Me
         </a>
@@ -336,7 +344,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--light);color:#E2E8F0;over
   <div class="grid">
 
     <!-- Watch Together -->
-    <div class="card c-watch" onclick="location.href='/sports?mode=watch'">
+    <div class="card c-watch" onclick="location.href='/watch'">
       <img class="card-img" src="https://images.unsplash.com/photo-1522778119026-d647f0596c20?w=800&q=80&auto=format&fit=crop" alt="">
       <div class="card-shade"></div>
       <div class="card-top"><div class="live-dot"></div>Live Now</div>
@@ -347,7 +355,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--light);color:#E2E8F0;over
     </div>
 
     <!-- Play Together -->
-    <div class="card c-play" onclick="location.href='/sports?mode=play'">
+    <div class="card c-play" onclick="location.href='/play'">
       <img class="card-img" src="https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=900&q=80&auto=format&fit=crop" alt="">
       <div class="card-shade"></div>
       <div class="card-top">🔥 Popular</div>
@@ -358,7 +366,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--light);color:#E2E8F0;over
     </div>
 
     <!-- Gym Mates -->
-    <div class="card c-gym" onclick="location.href='/sports?mode=gym'">
+    <div class="card c-gym" onclick="location.href='/gym'">
       <img class="card-img" src="https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=600&q=80&auto=format&fit=crop" alt="Gym">
       <div class="card-shade"></div>
       <div class="card-top">💪 New</div>
@@ -369,7 +377,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--light);color:#E2E8F0;over
     </div>
 
     <!-- Gear Share -->
-    <div class="card c-gear" onclick="location.href='/sports?mode=gear'">
+    <div class="card c-gear" onclick="location.href='/gear'">
       <img class="card-img" src="https://images.unsplash.com/photo-1529900748604-07564a03e7a6?w=600&q=80&auto=format&fit=crop" alt="Gear">
       <div class="card-shade"></div>
       <div class="card-body">
@@ -379,7 +387,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--light);color:#E2E8F0;over
     </div>
 
     <!-- Leagues -->
-    <div class="card c-league" onclick="location.href='/sports?mode=leagues'">
+    <div class="card c-league" onclick="location.href='/activities'">
       <img class="card-img" src="https://images.unsplash.com/photo-1518611012118-696072aa579a?w=600&q=80&auto=format&fit=crop" alt="Leagues">
       <div class="card-shade"></div>
       <div class="card-body">

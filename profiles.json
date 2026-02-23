@@ -1,0 +1,62 @@
+{
+  "dde": {
+    "name": "kl",
+    "age": 56,
+    "gender": "Non-binary",
+    "city": "ded",
+    "skill": "Beginner",
+    "mySports": [
+      "Swimming"
+    ],
+    "days": [
+      "Mon"
+    ],
+    "prefSports": [
+      "Badminton"
+    ],
+    "minAge": 18,
+    "maxAge": 45,
+    "prefGender": "Non-binary",
+    "prefSkill": "Intermediate"
+  },
+  "jk": {
+    "name": "hj",
+    "age": 6554,
+    "gender": "Male",
+    "city": "5455455",
+    "skill": "Casual",
+    "mySports": [
+      "Badminton"
+    ],
+    "days": [
+      "Thu"
+    ],
+    "prefSports": [
+      "Running"
+    ],
+    "minAge": 18,
+    "maxAge": 45,
+    "prefGender": "Non-binary",
+    "prefSkill": "Intermediate"
+  },
+  "d": {
+    "name": "u",
+    "age": 67,
+    "gender": "Female",
+    "city": "j",
+    "skill": "Competitive",
+    "mySports": [
+      "Gym"
+    ],
+    "days": [
+      "Fri"
+    ],
+    "prefSports": [
+      "Kabaddi"
+    ],
+    "minAge": 18,
+    "maxAge": 45,
+    "prefGender": "Non-binary",
+    "prefSkill": "Intermediate"
+  }
+}

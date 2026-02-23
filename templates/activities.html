@@ -448,7 +448,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);ove
 
 <!-- NAV -->
 <nav class="navbar">
-  <a class="brand" href="/">
+  <a class="brand" href="/home">
     <div class="brand-box">MM</div>
     <div>
       <div class="brand-name">MatchMate</div>
@@ -458,7 +458,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);ove
   <div class="nav-actions">
     <a href="/home" class="nav-link">Home</a>
     <a href="/activities" class="nav-link active-link">Activities</a>
-    <a href="/profile?user={{ username }}" class="nav-link">Profile</a>
+    <a href="/profile" class="nav-link">Profile</a>
     <a href="/logout" class="nav-link pill">Logout</a>
   </div>
 </nav>
@@ -910,7 +910,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);ove
         <div class="banner-title">Find Your <em>Activity</em> Partner</div>
         <div class="banner-sub">Match with people who share your fitness level, schedule, and sport — and never train alone again.</div>
       </div>
-      <a href="/sports?mode=play" class="banner-btn">
+      <a href="/activities" class="banner-btn">
         Find Partners →
       </a>
     </div>
@@ -971,7 +971,7 @@ function joinActivity(name) {
   font-family:'DM Sans',sans-serif;
 ">
   <!-- Brand -->
-  <a href="/" style="text-decoration:none;display:flex;align-items:center;gap:2px;">
+  <a href="/home" style="text-decoration:none;display:flex;align-items:center;gap:2px;">
     <span style="font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:1.5px;color:#fff;">Match</span>
     <span style="font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:1.5px;color:#F97316;">Mate</span>
   </a>

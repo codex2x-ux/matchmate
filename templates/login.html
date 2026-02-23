@@ -460,28 +460,28 @@
       <!-- LOGIN -->
       <div class="form-panel active" id="panel-login">
         <div class="field-group">
-          <div class="field-label">Email / Username</div>
+          <div class="field-label">Email Address</div>
           <div class="field-wrap">
             <span class="field-icon">📧</span>
-            <input class="field-input" type="email" placeholder="you@email.com">
+            <input class="field-input" type="email" id="login-email" placeholder="you@email.com" required>
           </div>
         </div>
         <div class="field-group">
           <div class="field-label">Password</div>
           <div class="field-wrap">
             <span class="field-icon">🔒</span>
-            <input class="field-input" type="password" id="loginPw" placeholder="••••••••">
-            <button class="pw-toggle" onclick="togglePw('loginPw',this)" type="button">👁</button>
+            <input class="field-input" type="password" id="login-password" placeholder="••••••••">
+            <button class="pw-toggle" onclick="togglePw('login-password',this)" type="button">👁</button>
           </div>
         </div>
         <div class="forgot-row">
-          <a class="forgot-link" href="#">Forgot password?</a>
+          <a class="forgot-link" href="#" id="forgot-link">Forgot password?</a>
         </div>
-        <button class="btn-submit">Sign In to MatchMate →</button>
+        <button class="btn-submit" id="btn-login" type="button">Sign In to MatchMate →</button>
         <div class="or-divider"><span></span><em>or continue with</em><span></span></div>
         <div class="social-row">
-          <button class="btn-social"><span class="s-icon">🇬</span> Google</button>
-          <button class="btn-social"><span class="s-icon">📘</span> Facebook</button>
+          <button class="btn-social btn-google"><span class="s-icon">🇬</span> Google</button>
+          <button class="btn-social" disabled style="opacity:0.4;cursor:not-allowed"><span class="s-icon">📘</span> Facebook</button>
         </div>
       </div>
 
@@ -492,14 +492,14 @@
             <div class="field-label">First Name</div>
             <div class="field-wrap">
               <span class="field-icon">👤</span>
-              <input class="field-input" type="text" placeholder="Alex" style="padding-left:44px">
+              <input class="field-input" type="text" id="signup-firstname" placeholder="Alex" style="padding-left:44px">
             </div>
           </div>
           <div class="field-group">
             <div class="field-label">Last Name</div>
             <div class="field-wrap">
               <span class="field-icon">👤</span>
-              <input class="field-input" type="text" placeholder="Rox" style="padding-left:44px">
+              <input class="field-input" type="text" id="signup-lastname" placeholder="Rox" style="padding-left:44px">
             </div>
           </div>
         </div>
@@ -507,29 +507,29 @@
           <div class="field-label">Email Address</div>
           <div class="field-wrap">
             <span class="field-icon">📧</span>
-            <input class="field-input" type="email" placeholder="you@email.com">
+            <input class="field-input" type="email" id="signup-email" placeholder="you@email.com">
           </div>
         </div>
         <div class="field-group">
           <div class="field-label">Username</div>
           <div class="field-wrap">
             <span class="field-icon">⚡</span>
-            <input class="field-input" type="text" placeholder="@beastmode99">
+            <input class="field-input" type="text" id="signup-username" placeholder="@beastmode99">
           </div>
         </div>
         <div class="field-group">
           <div class="field-label">Password</div>
           <div class="field-wrap">
             <span class="field-icon">🔒</span>
-            <input class="field-input" type="password" id="signupPw" placeholder="Min. 8 characters">
-            <button class="pw-toggle" onclick="togglePw('signupPw',this)" type="button">👁</button>
+            <input class="field-input" type="password" id="signup-password" placeholder="Min. 8 characters">
+            <button class="pw-toggle" onclick="togglePw('signup-password',this)" type="button">👁</button>
           </div>
         </div>
-        <button class="btn-submit">Create My Account →</button>
+        <button class="btn-submit" id="btn-signup" type="button">Create My Account →</button>
         <div class="or-divider"><span></span><em>or sign up with</em><span></span></div>
         <div class="social-row">
-          <button class="btn-social"><span class="s-icon">🇬</span> Google</button>
-          <button class="btn-social"><span class="s-icon">📘</span> Facebook</button>
+          <button class="btn-social btn-google"><span class="s-icon">🇬</span> Google</button>
+          <button class="btn-social" disabled style="opacity:0.4;cursor:not-allowed"><span class="s-icon">📘</span> Facebook</button>
         </div>
         <div class="terms-note">
           By creating an account you agree to our <a href="#">Terms</a> and <a href="#">Privacy Policy</a>.
@@ -541,6 +541,170 @@
   </div><!-- /login-inner -->
 </div><!-- /right-panel -->
 
+<!-- ══════════════════════════════════════════════
+     FIREBASE SDK  —  replace the config values below
+     with YOUR project's config from the Firebase Console
+     (Project Settings → Your Apps → SDK setup and configuration)
+═══════════════════════════════════════════════ -->
+<script type="module">
+  import { initializeApp }            from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+  import {
+    getAuth,
+    signInWithEmailAndPassword,
+    createUserWithEmailAndPassword,
+    GoogleAuthProvider,
+    signInWithPopup,
+    sendPasswordResetEmail,
+    updateProfile,
+  } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+  // ──────────────────────────────────────────────
+  //  🔧 PASTE YOUR FIREBASE CONFIG HERE
+  // ──────────────────────────────────────────────
+  const firebaseConfig = {
+  apiKey: "AIzaSyCxPl2JaDYpYl_9lT--z8XLov1BuA1E5KA",
+  authDomain: "matchmate-b78e8.firebaseapp.com",
+  projectId: "matchmate-b78e8",
+  storageBucket: "matchmate-b78e8.firebasestorage.app",
+  messagingSenderId: "295538137421",
+  appId: "1:295538137421:web:03fe854ad9958ce1d93f04",
+  measurementId: "G-08JVXCBVWW"
+};
+  // ──────────────────────────────────────────────
+
+  const app      = initializeApp(firebaseConfig);
+  const auth     = getAuth(app);
+  const provider = new GoogleAuthProvider();
+
+  // ── Helpers ──────────────────────────────────
+  function showError(msg) {
+    let el = document.getElementById('auth-error');
+    if (!el) {
+      el = document.createElement('div');
+      el.id = 'auth-error';
+      el.style.cssText =
+        'background:rgba(220,38,38,.15);border:1px solid rgba(220,38,38,.4);' +
+        'border-radius:10px;padding:10px 14px;font-size:13px;color:#fca5a5;' +
+        'margin-bottom:10px;';
+      document.querySelector('.form-panels').prepend(el);
+    }
+    el.textContent = msg;
+    el.style.display = 'block';
+  }
+  function clearError() {
+    const el = document.getElementById('auth-error');
+    if (el) el.style.display = 'none';
+  }
+  function setLoading(btn, loading) {
+    btn.disabled   = loading;
+    btn.style.opacity = loading ? '0.7' : '1';
+    btn.textContent   = loading ? 'Please wait…' : btn.dataset.label;
+  }
+
+  // After Firebase sign-in succeeds → send ID token to Flask to create a session
+  async function sendTokenToFlask(user, redirectUrl) {
+    const idToken = await user.getIdToken();
+    const res = await fetch('/firebase-session', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ idToken, displayName: user.displayName || user.email }),
+    });
+    if (res.ok) {
+      window.location.href = redirectUrl || '/home';
+    } else {
+      showError('Session error. Please try again.');
+    }
+  }
+
+  // ── EMAIL / PASSWORD  LOGIN ───────────────────
+  document.getElementById('btn-login').addEventListener('click', async () => {
+    clearError();
+    const email    = document.getElementById('login-email').value.trim();
+    const password = document.getElementById('login-password').value;
+    if (!email || !password) { showError('Please enter email and password.'); return; }
+
+    const btn = document.getElementById('btn-login');
+    setLoading(btn, true);
+    try {
+      const { user } = await signInWithEmailAndPassword(auth, email, password);
+      await sendTokenToFlask(user, '/home');
+    } catch (err) {
+      showError(friendlyError(err.code));
+    } finally {
+      setLoading(btn, false);
+    }
+  });
+
+  // ── EMAIL / PASSWORD  SIGN UP ─────────────────
+  document.getElementById('btn-signup').addEventListener('click', async () => {
+    clearError();
+    const firstName = document.getElementById('signup-firstname').value.trim();
+    const lastName  = document.getElementById('signup-lastname').value.trim();
+    const email     = document.getElementById('signup-email').value.trim();
+    const username  = document.getElementById('signup-username').value.trim();
+    const password  = document.getElementById('signup-password').value;
+
+    if (!email || !password) { showError('Email and password are required.'); return; }
+    if (password.length < 8)  { showError('Password must be at least 8 characters.'); return; }
+
+    const btn = document.getElementById('btn-signup');
+    setLoading(btn, true);
+    try {
+      const { user } = await createUserWithEmailAndPassword(auth, email, password);
+      // Store display name
+      await updateProfile(user, { displayName: username || `${firstName} ${lastName}`.trim() || email });
+      await sendTokenToFlask(user, '/profile');
+    } catch (err) {
+      showError(friendlyError(err.code));
+    } finally {
+      setLoading(btn, false);
+    }
+  });
+
+  // ── GOOGLE SIGN-IN (works for both Login & Signup tabs) ──
+  document.querySelectorAll('.btn-google').forEach(btn => {
+    btn.addEventListener('click', async () => {
+      clearError();
+      try {
+        const { user } = await signInWithPopup(auth, provider);
+        await sendTokenToFlask(user, '/home');
+      } catch (err) {
+        if (err.code !== 'auth/popup-closed-by-user') showError(friendlyError(err.code));
+      }
+    });
+  });
+
+  // ── FORGOT PASSWORD ───────────────────────────
+  document.getElementById('forgot-link').addEventListener('click', async (e) => {
+    e.preventDefault();
+    const email = document.getElementById('login-email').value.trim();
+    if (!email) { showError('Enter your email above first, then click Forgot Password.'); return; }
+    try {
+      await sendPasswordResetEmail(auth, email);
+      showError('✅ Password reset email sent! Check your inbox.');
+      document.getElementById('auth-error').style.cssText +=
+        'background:rgba(34,197,94,.15);border-color:rgba(34,197,94,.4);color:#86efac;';
+    } catch (err) {
+      showError(friendlyError(err.code));
+    }
+  });
+
+  // ── Friendly error messages ───────────────────
+  function friendlyError(code) {
+    const map = {
+      'auth/user-not-found':       'No account found with this email.',
+      'auth/wrong-password':       'Incorrect password. Try again.',
+      'auth/email-already-in-use': 'An account with this email already exists.',
+      'auth/invalid-email':        'Please enter a valid email address.',
+      'auth/weak-password':        'Password is too weak. Use at least 8 characters.',
+      'auth/too-many-requests':    'Too many attempts. Please wait and try again.',
+      'auth/network-request-failed': 'Network error. Check your connection.',
+      'auth/invalid-credential':   'Invalid email or password.',
+    };
+    return map[code] || `Something went wrong (${code}). Please try again.`;
+  }
+</script>
+
 <script>
   // ── TAB SWITCH ──
   function switchTab(tab) {
@@ -550,7 +714,6 @@
     document.getElementById('panel-login').classList.toggle('active', tab==='login');
     document.getElementById('panel-signup').classList.toggle('active', tab==='signup');
 
-    // Update heading
     const h = document.querySelector('.login-heading h1');
     if(tab==='login'){
       h.innerHTML = 'WELCOME<br><span>BACK,</span> CHAMP';
@@ -566,7 +729,13 @@
     else { inp.type = 'password'; btn.textContent = '👁'; }
   }
 
-
+  // Save default button labels for loading state
+  window.addEventListener('DOMContentLoaded', () => {
+    ['btn-login','btn-signup'].forEach(id => {
+      const b = document.getElementById(id);
+      if (b) b.dataset.label = b.textContent;
+    });
+  });
 </script>
 </body>
 </html>
