@@ -3,7 +3,14 @@ import firebase_admin
 from firebase_admin import credentials, auth as fb_auth
 
 # Initialize Firebase Admin ONCE at startup
-cred = credentials.Certificate("serviceAccountKey.json")
+import json, os
+
+key_json = os.environ.get("FIREBASE_SERVICE_ACCOUNT")
+if key_json:
+    cred = credentials.Certificate(json.loads(key_json))
+else:
+    cred = credentials.Certificate("serviceAccountKey.json")
+
 firebase_admin.initialize_app(cred)
 
 app = Flask(__name__)
